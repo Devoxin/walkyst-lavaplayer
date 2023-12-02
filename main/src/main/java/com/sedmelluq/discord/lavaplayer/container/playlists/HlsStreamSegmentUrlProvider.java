@@ -47,8 +47,7 @@ public class HlsStreamSegmentUrlProvider extends M3uStreamSegmentUrlProvider {
       return (segmentPlaylistUrl = streamListUrl);
     }
 
-    List<ChannelStreamInfo> streams = loadChannelStreamsList(
-        fetchResponseLines(httpInterface, request, "HLS stream list"));
+    List<ChannelStreamInfo> streams = loadChannelStreamsList(lines);
 
     if (streams.isEmpty()) {
       throw new IllegalStateException("No streams listed in HLS stream list.");
