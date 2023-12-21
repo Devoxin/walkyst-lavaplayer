@@ -42,9 +42,4 @@ public class TerminatorAudioFrame implements AudioFrame {
   public boolean isTerminator() {
     return true;
   }
-
-  @Override
-  public String[] getFlags() {
-    throw new UnsupportedOperationException();
-  }
 }
