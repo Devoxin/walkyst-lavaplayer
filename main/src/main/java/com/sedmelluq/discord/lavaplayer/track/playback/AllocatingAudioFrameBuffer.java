@@ -113,6 +113,8 @@ public class AllocatingAudioFrameBuffer extends AbstractAudioFrameBuffer {
         targetFrame.setTerminator(false);
       }
 
+      targetFrame.setFlags(frame.getFlags());
+
       return true;
     }
 
