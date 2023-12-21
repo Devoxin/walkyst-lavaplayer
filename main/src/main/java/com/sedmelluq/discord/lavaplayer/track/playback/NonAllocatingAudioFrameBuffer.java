@@ -1,12 +1,13 @@
 package com.sedmelluq.discord.lavaplayer.track.playback;
 
 import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Audio frame buffer implementation which never allocates any new objects after creation. All instances of mutable
@@ -287,7 +288,7 @@ public class NonAllocatingAudioFrameBuffer extends AbstractAudioFrameBuffer {
       return TerminatorAudioFrame.INSTANCE;
     } else {
       return new ImmutableAudioFrame(bridgeFrame.getTimecode(), bridgeFrame.getData(), bridgeFrame.getVolume(),
-          bridgeFrame.getFormat());
+          bridgeFrame.getFormat(), bridgeFrame.getFlags());
     }
   }
 
