@@ -270,6 +270,7 @@ public class NonAllocatingAudioFrameBuffer extends AbstractAudioFrameBuffer {
     targetFrame.setTimecode(frame.getTimecode());
     targetFrame.setVolume(frame.getVolume());
     targetFrame.setDataReference(frameBuffer, frameOffset, frameLength);
+    targetFrame.setFlags(frame.getFlags());
 
     frame.getData(frameBuffer, frameOffset);
 
