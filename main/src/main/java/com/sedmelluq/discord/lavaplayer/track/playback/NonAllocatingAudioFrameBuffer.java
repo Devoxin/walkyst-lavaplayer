@@ -182,6 +182,7 @@ public class NonAllocatingAudioFrameBuffer extends AbstractAudioFrameBuffer {
     targetFrame.setVolume(frame.getVolume());
     targetFrame.setTerminator(false);
     targetFrame.store(frame.getFrameBuffer(), frame.getFrameOffset(), frame.getDataLength());
+    targetFrame.setFormat(frame.getFormat());
     targetFrame.setFlags(frame.getFlags());
 
     firstFrame = wrappedFrameIndex(firstFrame + 1);
@@ -193,7 +194,7 @@ public class NonAllocatingAudioFrameBuffer extends AbstractAudioFrameBuffer {
     terminated = true;
 
     frame.setTerminator(true);
-    frame.setFlags();
+    frame.setFlags(); // TODO: Check whether this is necessary.
   }
 
   @Override
