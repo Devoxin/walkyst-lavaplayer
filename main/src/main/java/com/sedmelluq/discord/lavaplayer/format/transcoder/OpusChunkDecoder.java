@@ -32,6 +32,11 @@ public class OpusChunkDecoder implements AudioChunkDecoder {
   }
 
   @Override
+  public void decode(ByteBuffer encoded, ShortBuffer buffer) {
+    decoder.decode(encoded, buffer);
+  }
+
+  @Override
   public void close() {
     decoder.close();
   }
