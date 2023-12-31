@@ -166,12 +166,24 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
         scheduledTrack = null;
       }
 
+      // There's a fair amount of redundant/duplicated checks here so I need to improve
+      // this at some point.
+      boolean setScheduledTrack = false;
       InternalAudioTrack previousTrack = activeTrack;
-      activeTrack = null;
+
+      if (scheduledTrack != null) {
+        activeTrack = scheduledTrack;
+        scheduledTrack = null;
+        setScheduledTrack = true;
+      }
 
       if (previousTrack != null) {
         previousTrack.stop();
         dispatchEvent(new TrackEndEvent(this, previousTrack, reason));
+      }
+
+      if (setScheduledTrack) {
+        dispatchEvent(new TrackStartEvent(this, activeTrack));
       }
     }
   }
@@ -295,21 +307,16 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
         activeTrack = null;
 
         boolean failedBeforeLoad = track.getActiveExecutor().failedBeforeLoad();
-        AudioTrackEndReason endReason;
 
-        // this could probably be better...
-        if (scheduledTrack != null) {
-          endReason = failedBeforeLoad ? LOAD_FAILED_GAPLESS : FINISHED_GAPLESS;
-        }  else {
-          endReason = failedBeforeLoad ? LOAD_FAILED : FINISHED;
-        }
+        AudioTrackEndReason endReason = scheduledTrack != null
+            ? (failedBeforeLoad ? LOAD_FAILED_GAPLESS : FINISHED_GAPLESS)
+            : (failedBeforeLoad ? LOAD_FAILED : FINISHED);
 
         dispatchEvent(new TrackEndEvent(this, track, endReason));
 
         if (scheduledTrack != null) {
           activeTrack = scheduledTrack;
           scheduledTrack = null;
-
           dispatchEvent(new TrackStartEvent(this, activeTrack));
         }
       }
