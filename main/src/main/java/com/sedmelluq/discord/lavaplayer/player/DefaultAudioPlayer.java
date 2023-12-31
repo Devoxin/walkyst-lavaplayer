@@ -166,15 +166,13 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
         scheduledTrack = null;
       }
 
-      // There's a fair amount of redundant/duplicated checks here, so I need to improve
-      // this at some point.
-      boolean setScheduledTrack = false;
       InternalAudioTrack previousTrack = activeTrack;
 
       if (scheduledTrack != null) {
         activeTrack = scheduledTrack;
         scheduledTrack = null;
-        setScheduledTrack = true;
+      } else {
+        activeTrack = null;
       }
 
       if (previousTrack != null) {
@@ -182,10 +180,8 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
         dispatchEvent(new TrackEndEvent(this, previousTrack, reason));
       }
 
-      if (setScheduledTrack) {
+      if (activeTrack != null) {
         dispatchEvent(new TrackStartEvent(this, activeTrack));
-      } else {
-        activeTrack = null;
       }
     }
   }
