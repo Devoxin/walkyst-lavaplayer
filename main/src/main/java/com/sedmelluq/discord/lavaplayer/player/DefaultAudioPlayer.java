@@ -310,11 +310,14 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
             ? (failedBeforeLoad ? LOAD_FAILED_GAPLESS : FINISHED_GAPLESS)
             : (failedBeforeLoad ? LOAD_FAILED : FINISHED);
 
-        dispatchEvent(new TrackEndEvent(this, track, endReason));
-
         if (scheduledTrack != null) {
           activeTrack = scheduledTrack;
           scheduledTrack = null;
+        }
+
+        dispatchEvent(new TrackEndEvent(this, track, endReason));
+
+        if (activeTrack != null) {
           dispatchEvent(new TrackStartEvent(this, activeTrack));
         }
       }
