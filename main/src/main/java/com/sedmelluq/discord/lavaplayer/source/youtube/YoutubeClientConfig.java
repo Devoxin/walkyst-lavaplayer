@@ -8,7 +8,7 @@ import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class YoutubeClientConfig {
-    public static final String ANDROID_CLIENT_VERSION = "17.29.34"; // 17.36.4, 17.39.35
+    public static final String ANDROID_CLIENT_VERSION = "19.07.39"; // 18.06.35
     public static final AndroidVersion DEFAULT_ANDROID_VERSION = AndroidVersion.ANDROID_11;
 
     // Clients
@@ -27,9 +27,9 @@ public class YoutubeClientConfig {
 
     public static YoutubeClientConfig IOS = new YoutubeClientConfig()
         .withApiKey(YoutubeConstants.INNERTUBE_IOS_API_KEY)
-        .withUserAgent("com.google.ios.youtube/17.36.4 (iPhone14,5; U; CPU iOS 15_6 like Mac OS X)")
+        .withUserAgent("com.google.ios.youtube/19.07.5 (iPhone14,5; U; CPU iOS 15_6 like Mac OS X)") // 17.36.4
         .withClientName("IOS")
-        .withClientField("clientVersion", "17.36.4") // 17.39.4, 17.40.5
+        .withClientField("clientVersion", "19.07.5") // was 17.36.4, other: 17.39.4, 17.40.5
         .withClientField("osName", "iOS")
         .withClientField("osVersion", "15.6.0.19G71")
         .withClientField("deviceMake", "Apple")

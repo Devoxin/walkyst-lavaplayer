@@ -256,6 +256,14 @@ public class DefaultYoutubeTrackDetailsLoader implements YoutubeTrackDetailsLoad
       } catch (FriendlyException e) {
         throw e;
       } catch (Exception e) {
+        if ("Invalid status code for video page response: 400".equals(e.getMessage()) && clientOverride == null) {
+          YoutubeClientConfig retryConfig = YoutubeClientConfig.WEB.copy()
+              .withClientField("clientScreen", "EMBED")
+              .withThirdPartyEmbedUrl("https://google.com");
+
+          return loadTrackInfoFromInnertube(httpInterface, videoId, sourceManager, infoStatus, retryConfig);
+        }
+
         throw new FriendlyException("Received unexpected response from YouTube.", SUSPICIOUS,
             new RuntimeException("Failed to parse: " + responseText, e));
       }
