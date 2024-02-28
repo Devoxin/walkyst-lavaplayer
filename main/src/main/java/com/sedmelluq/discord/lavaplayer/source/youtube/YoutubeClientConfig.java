@@ -9,15 +9,15 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class YoutubeClientConfig {
     // 28-Feb-2024: https://github.com/yt-dlp/yt-dlp/pull/9317
-    public static final String ANDROID_CLIENT_VERSION = "18.11.34"; // 19.07.39
+    public static final String MOBILE_CLIENT_VERSION = "18.11.34"; // 19.07.39
     public static final AndroidVersion DEFAULT_ANDROID_VERSION = AndroidVersion.ANDROID_11;
 
     // Clients
     public static YoutubeClientConfig ANDROID = new YoutubeClientConfig()
         .withApiKey(YoutubeConstants.INNERTUBE_ANDROID_API_KEY)
-        .withUserAgent(String.format("com.google.android.youtube/%s (Linux; U; Android %s) gzip", ANDROID_CLIENT_VERSION, DEFAULT_ANDROID_VERSION.getOsVersion()))
+        .withUserAgent(String.format("com.google.android.youtube/%s (Linux; U; Android %s) gzip", MOBILE_CLIENT_VERSION, DEFAULT_ANDROID_VERSION.getOsVersion()))
         .withClientName("ANDROID")
-        .withClientField("clientVersion", ANDROID_CLIENT_VERSION)
+        .withClientField("clientVersion", MOBILE_CLIENT_VERSION)
         .withClientField("androidSdkVersion", DEFAULT_ANDROID_VERSION.getSdkVersion())
         .withClientField("osName", "Android")
         .withClientField("osVersion", DEFAULT_ANDROID_VERSION.getOsVersion())
@@ -28,9 +28,9 @@ public class YoutubeClientConfig {
 
     public static YoutubeClientConfig IOS = new YoutubeClientConfig()
         .withApiKey(YoutubeConstants.INNERTUBE_IOS_API_KEY)
-        .withUserAgent("com.google.ios.youtube/19.07.5 (iPhone14,5; U; CPU iOS 15_6 like Mac OS X)") // 17.36.4
+        .withUserAgent(String.format("com.google.ios.youtube/%s (iPhone14,5; U; CPU iOS 15_6 like Mac OS X)", MOBILE_CLIENT_VERSION)) // 19.07.5
         .withClientName("IOS")
-        .withClientField("clientVersion", "19.07.5") // was 17.36.4, other: 17.39.4, 17.40.5
+        .withClientField("clientVersion", MOBILE_CLIENT_VERSION) // was 17.36.4, other: 17.39.4, 17.40.5
         .withClientField("osName", "iOS")
         .withClientField("osVersion", "15.6.0.19G71")
         .withClientField("deviceMake", "Apple")
@@ -55,7 +55,7 @@ public class YoutubeClientConfig {
         .withApiKey(YoutubeConstants.INNERTUBE_WEB_API_KEY)
         .withClientName("WEB")
         .withClientField("clientVersion", "2.20240224.11.00") // 2.20220801.00.00
-        .withUserField("lockedSafetyMode", "false")
+        .withUserField("lockedSafetyMode", false)
         .withClientField("osName", "Windows")
         .withClientField("osVersion", "10.0")
         .withClientField("platform", "DESKTOP");
