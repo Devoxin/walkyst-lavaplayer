@@ -242,7 +242,7 @@ public class DefaultYoutubeTrackDetailsLoader implements YoutubeTrackDetailsLoad
         config = YoutubeClientConfig.TV_EMBEDDED.copy();
       } else {
         // Default payload from what we start trying to get required data
-        config = YoutubeClientConfig.ANDROID.copy()
+        config = YoutubeClientConfig.WEB.copy()
             .withClientField("clientScreen", "EMBED")
             .withThirdPartyEmbedUrl("https://google.com")
 //            .withRootField("cpn", YoutubeHelpers.generateContentPlaybackNonce())
@@ -251,10 +251,10 @@ public class DefaultYoutubeTrackDetailsLoader implements YoutubeTrackDetailsLoad
     }
 
     String payload = config
-        .withClientField("visitorData", tokenTracker.getAccessToken())
         .withRootField("racyCheckOk", true)
         .withRootField("contentCheckOk", true)
         .withRootField("videoId", videoId)
+        .withClientField("visitorData", tokenTracker.getVisitorId())
         .withPlaybackSignatureTimestamp(playerScriptTimestamp.scriptTimestamp)
         .setAttributes(httpInterface)
         .toJsonString();
