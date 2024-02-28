@@ -19,11 +19,11 @@ public class YoutubeClientConfig {
         .withClientName("ANDROID")
         .withClientField("clientVersion", MOBILE_CLIENT_VERSION)
         .withClientField("androidSdkVersion", DEFAULT_ANDROID_VERSION.getSdkVersion())
-        .withClientField("osName", "Android")
-        .withClientField("osVersion", DEFAULT_ANDROID_VERSION.getOsVersion())
-        .withClientField("platform", "MOBILE")
-        .withClientField("hl", "en-US")
-        .withClientField("gl", "US")
+//        .withClientField("osName", "Android")
+//        .withClientField("osVersion", DEFAULT_ANDROID_VERSION.getOsVersion())
+//        .withClientField("platform", "MOBILE")
+//        .withClientField("hl", "en-US")
+//        .withClientField("gl", "US")
         .withUserField("lockedSafetyMode", false);
 
     public static YoutubeClientConfig IOS = new YoutubeClientConfig()
@@ -55,10 +55,10 @@ public class YoutubeClientConfig {
         .withApiKey(YoutubeConstants.INNERTUBE_WEB_API_KEY)
         .withClientName("WEB")
         .withClientField("clientVersion", "2.20240224.11.00") // 2.20220801.00.00
-        .withUserField("lockedSafetyMode", false)
-        .withClientField("osName", "Windows")
-        .withClientField("osVersion", "10.0")
-        .withClientField("platform", "DESKTOP");
+        .withUserField("lockedSafetyMode", false);
+//        .withClientField("osName", "Windows")
+//        .withClientField("osVersion", "10.0")
+//        .withClientField("platform", "DESKTOP");
 //        .withClientField("deviceMake", "")
 //        .withClientField("deviceModel", "")
 //        .withClientField("clientScreen", "WATCH")
