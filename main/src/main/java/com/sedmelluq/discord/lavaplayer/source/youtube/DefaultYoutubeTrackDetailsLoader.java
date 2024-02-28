@@ -25,7 +25,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class DefaultYoutubeTrackDetailsLoader implements YoutubeTrackDetailsLoader {
   private static final Logger log = LoggerFactory.getLogger(DefaultYoutubeTrackDetailsLoader.class);
 
+  private YoutubeAccessTokenTracker tokenTracker;
+
   private volatile CachedPlayerScript cachedPlayerScript = null;
+
+  @Override
+  public void setTokenTracker(YoutubeAccessTokenTracker tokenTracker) {
+    this.tokenTracker = tokenTracker;
+  }
 
   @Override
   public YoutubeTrackDetails loadDetails(HttpInterface httpInterface, String videoId, boolean requireFormats, YoutubeAudioSourceManager sourceManager, YoutubeClientConfig clientConfig) {
@@ -238,12 +245,14 @@ public class DefaultYoutubeTrackDetailsLoader implements YoutubeTrackDetailsLoad
         config = YoutubeClientConfig.ANDROID.copy()
             .withClientField("clientScreen", "EMBED")
             .withThirdPartyEmbedUrl("https://google.com")
-            .withRootField("cpn", YoutubeHelpers.generateContentPlaybackNonce())
+//            .withRootField("cpn", YoutubeHelpers.generateContentPlaybackNonce())
             .withRootField("params", YoutubeConstants.PLAYER_PARAMS);
       }
     }
 
-    String payload = config.withRootField("racyCheckOk", true)
+    String payload = config
+        .withClientField("visitorData", tokenTracker.getAccessToken())
+        .withRootField("racyCheckOk", true)
         .withRootField("contentCheckOk", true)
         .withRootField("videoId", videoId)
         .withPlaybackSignatureTimestamp(playerScriptTimestamp.scriptTimestamp)

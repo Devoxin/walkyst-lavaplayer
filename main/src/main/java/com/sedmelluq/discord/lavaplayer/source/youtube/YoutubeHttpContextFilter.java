@@ -70,7 +70,7 @@ public class YoutubeHttpContextFilter extends BaseYoutubeHttpContextFilter {
     if (context.getAttribute(ATTRIBUTE_USER_AGENT_SPECIFIED) != null) {
       String visitorId = tokenTracker.updateVisitorId();
       request.setHeader("User-Agent", userAgent);
-      request.setHeader("X-Goog-Visitor-Id", visitorId);
+//      request.setHeader("X-Goog-Visitor-Id", visitorId);
       context.removeAttribute(ATTRIBUTE_USER_AGENT_SPECIFIED);
     }
 

@@ -53,15 +53,25 @@ public class YoutubeClientConfig {
     public static YoutubeClientConfig WEB = new YoutubeClientConfig()
         .withApiKey(YoutubeConstants.INNERTUBE_WEB_API_KEY)
         .withClientName("WEB")
-        .withClientField("clientVersion", "2.20220801.00.00");
+        .withClientField("clientVersion", "2.20240224.11.00") // 2.20220801.00.00
+        .withUserField("lockedSafetyMode", "false");
         //.withClientField("platform", "DESKTOP");
-        // platform DESKTOP
+        //.withClientField("osName", "Windows");
+        //.withClientField("osVersion", "10.0");
+        //.withClientField("visitorData", "...");
+        //.withClientField("userAgent", "...");
+        //.withClientField("remoteHost", "<client IP>");
+        //.withClientField("originalUrl", "https://www.youtube.com");
+        //.withClientField("clientScreen", "WATCH");
+        //.withClientField("browserName", "Chrome");
+        //.withClientField("browserVersion", "122.0.0.0");
 
     public static YoutubeClientConfig MUSIC = new YoutubeClientConfig()
         .withApiKey(YoutubeConstants.INNERTUBE_MUSIC_API_KEY) // Requires header (Referer music.youtube.com)
         .withClientName("WEB_REMIX")
         .withClientField("clientVersion", "1.20220727.01.00"); // 0.1
 
+    // https://github.com/MShawon/YouTube-Viewer/issues/593
     // root.cpn => content playback nonce, a-zA-Z0-9-_ (16 characters)
     // contextPlaybackContext.refer => url (video watch URL?)
 
