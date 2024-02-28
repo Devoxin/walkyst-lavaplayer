@@ -231,32 +231,32 @@ public class DefaultYoutubeTrackDetailsLoader implements YoutubeTrackDetailsLoad
     YoutubeClientConfig config = clientOverride;
 
     if (config == null) {
-      if (infoStatus == InfoStatus.PREMIERE_TRAILER) {
-        // Android client gives encoded Base64 response to trailer which is also protobuf, so we can't decode it
-        config = YoutubeClientConfig.WEB.copy();
-      } else if (infoStatus == InfoStatus.NON_EMBEDDABLE) { // When age restriction bypass fails, if we have valid auth then this request will most likely succeed
-        config = YoutubeClientConfig.ANDROID.copy()
-            .withRootField("params", YoutubeConstants.PLAYER_PARAMS);
-      } else if (infoStatus == InfoStatus.REQUIRES_LOGIN) {
-        // Age restriction bypass
-        config = YoutubeClientConfig.TV_EMBEDDED.copy();
-      } else {
-        // Default payload from what we start trying to get required data
-        config = YoutubeClientConfig.WEB.copy()
-            .withClientField("clientScreen", "EMBED")
-            .withThirdPartyEmbedUrl("https://google.com")
-//            .withRootField("cpn", YoutubeHelpers.generateContentPlaybackNonce())
-            .withRootField("params", YoutubeConstants.PLAYER_PARAMS);
+      switch (infoStatus) {
+        case PREMIERE_TRAILER: // Base64 protobuf response, requires WEB
+          config = YoutubeClientConfig.WEB.copy();
+          break;
+        case NON_EMBEDDABLE: // When age restriction bypass fails, this request should succeed if we have valid auth.
+          config = YoutubeClientConfig.ANDROID.copy()
+              .withRootField("params", YoutubeConstants.PLAYER_PARAMS);
+          break;
+        case REQUIRES_LOGIN: // Age restriction, requires TV_EMBEDDED
+          config = YoutubeClientConfig.TV_EMBEDDED.copy();
+          break;
+        default: // Default payload from what we start trying to get required data
+          config = YoutubeClientConfig.ANDROID.copy()
+              .withClientField("clientScreen", "EMBED")
+              .withThirdPartyEmbedUrl("https://google.com")
+              .withRootField("params", YoutubeConstants.PLAYER_PARAMS);
+          break;
       }
     }
 
-    String payload = config
+    String payload = config.setAttributes(httpInterface)
         .withRootField("racyCheckOk", true)
         .withRootField("contentCheckOk", true)
         .withRootField("videoId", videoId)
         .withClientField("visitorData", tokenTracker.getVisitorId())
         .withPlaybackSignatureTimestamp(playerScriptTimestamp.scriptTimestamp)
-        .setAttributes(httpInterface)
         .toJsonString();
 
     log.debug("Loading track info with payload: {}", payload);
