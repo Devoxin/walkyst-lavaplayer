@@ -61,7 +61,14 @@ public class DefaultYoutubeTrackDetailsLoader implements YoutubeTrackDetailsLoad
         return null;
       }
 
-      if (!videoId.equals(initialData.playerResponse.get("videoDetails").get("videoId").text())) {
+      String responseVideoId = initialData.playerResponse.get("videoDetails").get("videoId").text();
+
+      if (!videoId.equals(responseVideoId)) {
+        if (clientConfig == null) {
+          log.warn("Received different YouTube video ({}, want: {}) to what was requested, retrying with WEB client...", responseVideoId, videoId);
+          return load(httpInterface, videoId, requireFormats, sourceManager, YoutubeClientConfig.WEB);
+        }
+
         throw new FriendlyException("Video returned by YouTube isn't what was requested", COMMON,
             new IllegalStateException(initialData.playerResponse.format()));
       }
