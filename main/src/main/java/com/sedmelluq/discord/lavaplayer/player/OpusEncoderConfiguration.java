@@ -36,12 +36,12 @@ public class OpusEncoderConfiguration {
      * Sets the target bitrate for the encoder.
      * When a target bitrate is set, it's recommended to enable {@link #setVbrConstraint},
      * or disable {@link #setVbr}.
-     * @param bitrate The target bitrate. There is an upper limit of 510Kbps imposed for 2-channel Opus.
-     *                You may use {@link OpusEncoderLibrary#OPUS_BITRATE_MAX} to have the encoder calculate the
-     *                maximum bitrate allowed based on the encoder initialisation parameters.
+     * @param bps The target bitrate, in bits per second. There is an upper limit of 510Kbps imposed for 2-channel Opus.
+     *            You may use {@link OpusEncoderLibrary#OPUS_BITRATE_MAX} to have the encoder calculate the
+     *            maximum bitrate allowed based on the encoder initialisation parameters.
      * @return This, useful for chaining.
      */
-    public OpusEncoderConfiguration setBitrate(int bitrate) {
+    public OpusEncoderConfiguration setBitrate(int bps) {
         configureRaw(OpusEncoderLibrary.SET_BITRATE_REQUEST, bitrate);
         return this;
     }
