@@ -24,9 +24,6 @@ public class OpusEncoder extends NativeResourceHolder {
     if (instance == 0) {
       throw new IllegalStateException("Failed to create an encoder instance");
     }
-
-    library.configure(instance, OpusEncoderLibrary.SET_VBR_REQUEST, 0);
-    library.configure(instance, OpusEncoderLibrary.SET_BITRATE_REQUEST, OpusEncoderLibrary.OPUS_BITRATE_MAX);
   }
 
   public int configure(int request, int value) {
