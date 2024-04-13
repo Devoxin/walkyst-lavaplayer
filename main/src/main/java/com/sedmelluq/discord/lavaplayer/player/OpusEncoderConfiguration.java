@@ -42,7 +42,7 @@ public class OpusEncoderConfiguration {
      * @return This, useful for chaining.
      */
     public OpusEncoderConfiguration setBitrate(int bps) {
-        configureRaw(OpusEncoderLibrary.SET_BITRATE_REQUEST, bitrate);
+        configureRaw(OpusEncoderLibrary.SET_BITRATE_REQUEST, bps);
         return this;
     }
 
