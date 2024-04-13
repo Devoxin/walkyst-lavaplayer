@@ -54,6 +54,7 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
     return this.configuration == null ? manager.getConfiguration() : this.configuration;
   }
 
+  @Override
   public AudioConfiguration getConfiguration() {
     if (configuration == null) {
       configuration = manager.getConfiguration().copy();
