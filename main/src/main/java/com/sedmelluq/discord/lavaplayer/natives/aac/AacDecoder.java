@@ -22,6 +22,8 @@ public class AacDecoder extends NativeResourceHolder {
   private static final int ERROR_OUTPUT_BUFFER_TOO_SMALL = 8204;
 
   public static final int AAC_LC = 2;
+  public static final int SBR = 5; // HE-AAC
+  public static final int PS = 29; // HE-AACv2
 
   private final AacDecoderLibrary library;
   private final long instance;

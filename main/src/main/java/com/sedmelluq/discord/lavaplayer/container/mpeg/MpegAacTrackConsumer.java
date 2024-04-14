@@ -67,20 +67,19 @@ public class MpegAacTrackConsumer implements MpegTrackConsumer {
       if (inputBuffer == null) {
         inputBuffer = ByteBuffer.allocateDirect(4096);
       }
-
-      processInput(channel, length);
     } else {
-      if (packetRouter.embeddedDecoder == null) {
-        if (track.decoderConfig != null) {
-          packetRouter.embeddedDecoder = Decoder.create(track.decoderConfig);
-        } else {
-          packetRouter.embeddedDecoder = Decoder.create(AacDecoder.AAC_LC, track.sampleRate, track.channelCount);
-        }
-        inputBuffer = ByteBuffer.allocate(4096);
-      }
-
-      processInput(channel, length);
+      throw new IllegalStateException("Failed to configure decoder");
+//      if (packetRouter.embeddedDecoder == null) {
+//        if (track.decoderConfig != null) {
+//          packetRouter.embeddedDecoder = Decoder.create(track.decoderConfig);
+//        } else {
+//          packetRouter.embeddedDecoder = Decoder.create(AacDecoder.AAC_LC, track.sampleRate, track.channelCount);
+//        }
+//        inputBuffer = ByteBuffer.allocate(4096);
+//      }
     }
+
+    processInput(channel, length);
   }
 
   private void processInput(ReadableByteChannel channel, int length) throws InterruptedException {

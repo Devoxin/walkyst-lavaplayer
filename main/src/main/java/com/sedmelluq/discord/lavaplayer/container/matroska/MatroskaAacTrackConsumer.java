@@ -64,16 +64,12 @@ public class MatroskaAacTrackConsumer implements MatroskaTrackConsumer {
       if (inputBuffer == null) {
         inputBuffer = ByteBuffer.allocateDirect(4096);
       }
-
-      processInput(data);
-    } else {
-      if (packetRouter.embeddedDecoder == null) {
+    } else if (packetRouter.embeddedDecoder == null) {
         packetRouter.embeddedDecoder = Decoder.create(track.codecPrivate);
         inputBuffer = ByteBuffer.allocate(4096);
-      }
-
-      processInput(data);
     }
+
+    processInput(data);
   }
 
   private void processInput(ByteBuffer data) throws InterruptedException {
