@@ -45,9 +45,8 @@ public class AacDecoder extends NativeResourceHolder {
    * @throws IllegalStateException If the decoder has already been closed.
    */
   public int configure(int objectType, int frequency, int channels) {
-    long buffer = encodeConfiguration(objectType, frequency, channels);
-
-    return configureRaw(buffer);
+    byte[] buffer = encodeConfiguration(objectType, frequency, channels);
+    return configure(buffer);
   }
 
   /**
@@ -57,29 +56,24 @@ public class AacDecoder extends NativeResourceHolder {
    * @throws IllegalStateException If the decoder has already been closed.
    */
   public int configure(byte[] config) {
+    checkNotReleased();
+
     if (config.length > 8) {
       throw new IllegalArgumentException("Cannot process a header larger than size 8");
     }
 
-    long buffer = 0;
-    for (int i = 0; i < config.length; i++) {
-      buffer |= ((long) config[i]) << (i << 3);
-    }
-
-    return configureRaw(buffer);
+    return library.configure(instance, config);
   }
 
-  private synchronized int configureRaw(long buffer) {
-    checkNotReleased();
+//  private synchronized int configureRaw(long buffer) {
+//    if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN) {
+//      buffer = Long.reverseBytes(buffer);
+//    }
+//
+//    return library.configure(instance, buffer);
+//  }
 
-    if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN) {
-      buffer = Long.reverseBytes(buffer);
-    }
-
-    return library.configure(instance, buffer);
-  }
-
-  private static long encodeConfiguration(int objectType, int frequency, int channels) {
+  private static byte[] encodeConfiguration(int objectType, int frequency, int channels) {
     try {
       ByteBuffer buffer = ByteBuffer.allocate(8);
       buffer.order(ByteOrder.nativeOrder());
@@ -99,7 +93,7 @@ public class AacDecoder extends NativeResourceHolder {
 
       buffer.clear();
 
-      return buffer.getLong();
+      return buffer.array();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
