@@ -108,6 +108,12 @@ public class YoutubeAudioSourceManager implements AudioSourceManager {
         return "youtube";
     }
 
+    public void setPlaylistPageCount(int count) {
+        for (Client client : clients) {
+            client.setPlaylistPageCount(count);
+        }
+    }
+
     @Override
     public AudioItem loadItem(AudioPlayerManager manager, AudioReference reference) {
         try {
