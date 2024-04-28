@@ -38,7 +38,6 @@ public class PersistentHttpStream extends SeekableInputStream implements AutoClo
   private CloseableHttpResponse currentResponse;
   protected InputStream currentContent;
   protected long position;
-  protected boolean isRangeHeaderOverridden = false;
 
   /**
    * @param httpInterface The HTTP interface to use for requests
@@ -95,7 +94,7 @@ public class PersistentHttpStream extends SeekableInputStream implements AutoClo
   private HttpGet getConnectRequest() {
     HttpGet request = new HttpGet(getConnectUrl());
 
-    if (position > 0 && useHeadersForRange() && !isRangeHeaderOverridden) {
+    if (position > 0 && useHeadersForRange()) {
       request.setHeader(HttpHeaders.RANGE, "bytes=" + position + "-");
     }
 

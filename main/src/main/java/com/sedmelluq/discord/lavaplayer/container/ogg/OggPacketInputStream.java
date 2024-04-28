@@ -351,7 +351,6 @@ public class OggPacketInputStream extends InputStream {
     OggStreamSizeInfo sizeInfo = scanForSizeInfo(SHORT_SCAN, sampleRate);
 
     if (sizeInfo == null) {
-      System.out.println("sizeInfo is null, doing long scan");
       sizeInfo = scanForSizeInfo(LONG_SCAN, sampleRate);
     }
 

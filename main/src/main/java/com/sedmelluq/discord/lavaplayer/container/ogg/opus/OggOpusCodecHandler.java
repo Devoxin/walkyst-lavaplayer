@@ -47,8 +47,8 @@ public class OggOpusCodecHandler implements OggCodecHandler {
   @Override
   public OggMetadata loadMetadata(OggPacketInputStream stream, DirectBufferStreamBroker broker) throws IOException {
     ByteBuffer firstPacket = broker.getBuffer();
-    int sampleRate = getSampleRate(firstPacket);
     verifyFirstPacket(firstPacket);
+    int sampleRate = getSampleRate(firstPacket);
 
     loadCommentsHeader(stream, broker, false);
 
