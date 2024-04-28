@@ -9,6 +9,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,7 @@ public class PersistentHttpStream extends SeekableInputStream implements AutoClo
   private CloseableHttpResponse currentResponse;
   protected InputStream currentContent;
   protected long position;
+  protected boolean isRangeHeaderOverridden = false;
 
   /**
    * @param httpInterface The HTTP interface to use for requests
@@ -93,7 +95,7 @@ public class PersistentHttpStream extends SeekableInputStream implements AutoClo
   private HttpGet getConnectRequest() {
     HttpGet request = new HttpGet(getConnectUrl());
 
-    if (position > 0 && useHeadersForRange()) {
+    if (position > 0 && useHeadersForRange() && !isRangeHeaderOverridden) {
       request.setHeader(HttpHeaders.RANGE, "bytes=" + position + "-");
     }
 
@@ -118,7 +120,8 @@ public class PersistentHttpStream extends SeekableInputStream implements AutoClo
   }
 
   private boolean attemptConnect(boolean skipStatusCheck, boolean retryOnServerError) throws IOException {
-    currentResponse = httpInterface.execute(getConnectRequest());
+    HttpUriRequest request = getConnectRequest();
+    currentResponse = httpInterface.execute(request);
     lastStatusCode = currentResponse.getStatusLine().getStatusCode();
 
     if (!skipStatusCheck && !validateStatusCode(currentResponse, retryOnServerError)) {
@@ -138,6 +141,12 @@ public class PersistentHttpStream extends SeekableInputStream implements AutoClo
 
       if (header != null) {
         contentLength = Long.parseLong(header.getValue());
+      }
+    }
+
+    if (position > 0 && request.containsHeader(HttpHeaders.RANGE)) {
+      if (!currentResponse.containsHeader(HttpHeaders.CONTENT_RANGE) && lastStatusCode != HttpStatus.SC_PARTIAL_CONTENT) {
+        skipFully(position);
       }
     }
 
