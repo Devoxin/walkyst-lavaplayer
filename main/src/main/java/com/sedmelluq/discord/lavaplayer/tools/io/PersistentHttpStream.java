@@ -143,11 +143,11 @@ public class PersistentHttpStream extends SeekableInputStream implements AutoClo
       }
     }
 
-    if (position > 0 && request.containsHeader(HttpHeaders.RANGE)) {
-      if (!currentResponse.containsHeader(HttpHeaders.CONTENT_RANGE) && lastStatusCode != HttpStatus.SC_PARTIAL_CONTENT) {
-        skipFully(position);
-      }
-    }
+//    if (position > 0 && request.containsHeader(HttpHeaders.RANGE)) {
+//      if (!currentResponse.containsHeader(HttpHeaders.CONTENT_RANGE) && lastStatusCode != HttpStatus.SC_PARTIAL_CONTENT) {
+//        skipFully(position);
+//      }
+//    }
 
     return true;
   }
