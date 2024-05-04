@@ -167,16 +167,16 @@ public class Mp3Decoder extends NativeResourceHolder {
       // 2 - MPEG 2
       // 3 - MPEG 1
       int index = (buffer[offset + 1] & 0x18) >> 3;
-        switch (index) {
-          case 0:
-            return MPEG_2_5;
-          case 2:
-            return MPEG_2;
-          case 3:
-            return MPEG_1;
-          default:
-            throw new IllegalArgumentException("Invalid version");
-        }
+      switch (index) {
+        case 0:
+          return MPEG_2_5;
+        case 2:
+          return MPEG_2;
+        case 3:
+          return MPEG_1;
+        default:
+          throw new IllegalArgumentException("Invalid version");
+      }
     }
 
     private static int getMaxFrameSize() {

@@ -196,7 +196,6 @@ public class Mp3TrackProvider implements AudioTrackInfoProvider {
 
       for (int i = 0; i < 3; i++) {
         if (tagHeaderBuffer[i] != IDV3_TAG[i]) {
-          inputStream.seek(inputStream.getPosition() - 3);
           frameReader.appendToScanBuffer(tagHeaderBuffer, 0, 3);
           System.arraycopy(lastTagHeader, 0, tagHeaderBuffer, 0, 4);
           return;
