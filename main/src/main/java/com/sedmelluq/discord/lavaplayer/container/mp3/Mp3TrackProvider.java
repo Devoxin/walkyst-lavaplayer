@@ -26,9 +26,6 @@ import static com.sedmelluq.discord.lavaplayer.natives.mp3.Mp3Decoder.MPEG1_SAMP
  * Handles parsing MP3 files, seeking and sending the decoded frames to the specified frame consumer.
  */
 public class Mp3TrackProvider implements AudioTrackInfoProvider {
-  private static final int SHORT_SCAN_DISTANCE = 2048;
-  private static final int LONG_SCAN_DISTANCE = 560000;
-
   private static final byte[] IDV3_TAG = new byte[] { 0x49, 0x44, 0x33 };
   private static final int IDV3_FLAG_EXTENDED = 0x40;
 
@@ -78,10 +75,8 @@ public class Mp3TrackProvider implements AudioTrackInfoProvider {
   public void parseHeaders() throws IOException {
     skipIdv3Tags();
 
-    if (!frameReader.scanForFrame(SHORT_SCAN_DISTANCE, false)) {
-      if (!frameReader.scanForFrame(LONG_SCAN_DISTANCE, true)) {
-        throw new IllegalStateException("File ended before the first frame was found.");
-      }
+    if (!frameReader.scanForFrame(2048, true)) {
+      throw new IllegalStateException("File ended before the first frame was found.");
     }
 
     sampleRate = Mp3Decoder.getFrameSampleRate(frameBuffer, 0);
@@ -193,35 +188,42 @@ public class Mp3TrackProvider implements AudioTrackInfoProvider {
   }
 
   private void skipIdv3Tags() throws IOException {
-    dataInput.readFully(tagHeaderBuffer, 0, 3);
+    byte[] lastTagHeader = new byte[4];
 
-    for (int i = 0; i < 3; i++) {
-      if (tagHeaderBuffer[i] != IDV3_TAG[i]) {
-        frameReader.appendToScanBuffer(tagHeaderBuffer, 0, 3);
+    while (true) {
+      System.arraycopy(tagHeaderBuffer, 0, lastTagHeader, 0, 4);
+      dataInput.readFully(tagHeaderBuffer, 0, 3);
+
+      for (int i = 0; i < 3; i++) {
+        if (tagHeaderBuffer[i] != IDV3_TAG[i]) {
+          inputStream.seek(inputStream.getPosition() - 3);
+          frameReader.appendToScanBuffer(tagHeaderBuffer, 0, 3);
+          System.arraycopy(lastTagHeader, 0, tagHeaderBuffer, 0, 4);
+          return;
+        }
+      }
+
+      int majorVersion = dataInput.readByte() & 0xFF;
+      // Minor version
+      dataInput.readByte();
+
+      if (majorVersion < 2 || majorVersion > 5) {
         return;
       }
+
+      int flags = dataInput.readByte() & 0xFF;
+      int tagsSize = readSyncProofInteger();
+
+      long tagsEndPosition = inputStream.getPosition() + tagsSize;
+
+      skipExtendedHeader(flags);
+
+      if (majorVersion < 5) {
+        parseIdv3Frames(majorVersion, tagsEndPosition);
+      }
+
+      inputStream.seek(tagsEndPosition);
     }
-
-    int majorVersion = dataInput.readByte() & 0xFF;
-    // Minor version
-    dataInput.readByte();
-
-    if (majorVersion < 2 || majorVersion > 5) {
-      return;
-    }
-
-    int flags = dataInput.readByte() & 0xFF;
-    int tagsSize = readSyncProofInteger();
-
-    long tagsEndPosition = inputStream.getPosition() + tagsSize;
-
-    skipExtendedHeader(flags);
-
-    if (majorVersion < 5) {
-      parseIdv3Frames(majorVersion, tagsEndPosition);
-    }
-
-    inputStream.seek(tagsEndPosition);
   }
 
   private int readSyncProofInteger() throws IOException {
