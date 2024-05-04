@@ -26,6 +26,9 @@ import static com.sedmelluq.discord.lavaplayer.natives.mp3.Mp3Decoder.MPEG1_SAMP
  * Handles parsing MP3 files, seeking and sending the decoded frames to the specified frame consumer.
  */
 public class Mp3TrackProvider implements AudioTrackInfoProvider {
+  private static final int SHORT_SCAN_DISTANCE = 2048;
+  private static final int LONG_SCAN_DISTANCE = 560000;
+
   private static final byte[] IDV3_TAG = new byte[] { 0x49, 0x44, 0x33 };
   private static final int IDV3_FLAG_EXTENDED = 0x40;
 
@@ -75,8 +78,10 @@ public class Mp3TrackProvider implements AudioTrackInfoProvider {
   public void parseHeaders() throws IOException {
     skipIdv3Tags();
 
-    if (!frameReader.scanForFrame(2048, true)) {
-      throw new IllegalStateException("File ended before the first frame was found.");
+    if (!frameReader.scanForFrame(SHORT_SCAN_DISTANCE, false)) {
+      if (!frameReader.scanForFrame(LONG_SCAN_DISTANCE, true)) {
+        throw new IllegalStateException("File ended before the first frame was found.");
+      }
     }
 
     sampleRate = Mp3Decoder.getFrameSampleRate(frameBuffer, 0);
@@ -115,11 +120,7 @@ public class Mp3TrackProvider implements AudioTrackInfoProvider {
    */
   public void provideFrames() throws InterruptedException {
     try {
-      while (true) {
-        if (!frameReader.fillFrameBuffer()) {
-          break;
-        }
-
+      while (frameReader.fillFrameBuffer()) {
         inputBuffer.clear();
         inputBuffer.put(frameBuffer, 0, frameReader.getFrameSize());
         inputBuffer.flip();
@@ -273,13 +274,13 @@ public class Mp3TrackProvider implements AudioTrackInfoProvider {
 
     switch (encoding) {
       case 0:
-        return new String(data, 0, size - (shortTerminator ? 2 : 1), "ISO-8859-1");
+        return new String(data, 0, size - (shortTerminator ? 2 : 1), StandardCharsets.ISO_8859_1);
       case 1:
-        return new String(data, 0, size - (wideTerminator ? 3 : 1), "UTF-16");
+        return new String(data, 0, size - (wideTerminator ? 3 : 1), StandardCharsets.UTF_16);
       case 2:
-        return new String(data, 0, size - (wideTerminator ? 3 : 1), "UTF-16BE");
+        return new String(data, 0, size - (wideTerminator ? 3 : 1), StandardCharsets.UTF_16BE);
       case 3:
-        return new String(data, 0, size - (shortTerminator ? 2 : 1), "UTF-8");
+        return new String(data, 0, size - (shortTerminator ? 2 : 1), StandardCharsets.UTF_8);
       default:
         return null;
     }
