@@ -18,6 +18,10 @@ public class OggVorbisCodecHandler implements OggCodecHandler {
 
   private static final byte[] COMMENT_PACKET_START = new byte[] { 0x03, 'v', 'o', 'r', 'b', 'i', 's' };
 
+  static {
+    System.out.println("VORBIS_IDENTIFIER = " + VORBIS_IDENTIFIER);
+  }
+
   @Override
   public boolean isMatchingIdentifier(int identifier) {
     return identifier == VORBIS_IDENTIFIER;

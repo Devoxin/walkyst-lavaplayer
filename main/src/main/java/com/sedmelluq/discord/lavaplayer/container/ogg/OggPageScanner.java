@@ -82,8 +82,7 @@ public class OggPageScanner {
           long position = byteStreamPosition;
           long granulePosition = Long.reverseBytes(reversedPosition);
           long timecode = granulePosition / (sampleRate / 1000);
-          pageSequence++;
-          seekPoints.add(new OggSeekPoint(position, granulePosition, timecode, pageSequence));
+          seekPoints.add(new OggSeekPoint(position, granulePosition, timecode, ++pageSequence));
         }
       }
 

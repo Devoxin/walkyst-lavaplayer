@@ -4,6 +4,8 @@ import com.sedmelluq.discord.lavaplayer.tools.io.SeekableInputStream;
 import com.sedmelluq.discord.lavaplayer.tools.io.StreamTools;
 
 import java.io.*;
+import java.lang.Thread.State;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.sedmelluq.discord.lavaplayer.container.MediaContainerDetection.checkNextBytes;
@@ -73,17 +75,17 @@ public class OggPacketInputStream extends InputStream {
     if (state == State.TRACK_BOUNDARY) {
       return false;
     } else if (state == State.TRACK_SEEKING) {
-      loadNextNonEmptyPage();
+      loadNextNonEmptyPage(true);
     } else if (state != State.PACKET_BOUNDARY) {
       throw new IllegalStateException("Cannot start a new packet while the previous one has not been consumed.");
     }
 
-    if ((pageHeader == null || nextPacketSegmentIndex == pageHeader.segmentCount) && !loadNextNonEmptyPage()) {
+    if ((pageHeader == null || nextPacketSegmentIndex == pageHeader.segmentCount) && !loadNextNonEmptyPage(true)) {
       return false;
     }
 
     if (!initialisePacket()) {
-      return loadNextNonEmptyPage();
+      return loadNextNonEmptyPage(true);
     }
 
     return true;
@@ -93,13 +95,16 @@ public class OggPacketInputStream extends InputStream {
     return state == State.PACKET_READ;
   }
 
-  private boolean readPageHeader() throws IOException {
+  private boolean readPageHeader(boolean fatal) throws IOException {
     if (!checkNextBytes(inputStream, OGG_PAGE_HEADER, false)) {
       if (inputStream.read() == -1) {
         return false;
       }
 
-      throw new IllegalStateException("Stream is not positioned at a page header.");
+      if (fatal) {
+        System.out.println(inputStream.getPosition());
+        throw new IllegalStateException("Stream is not positioned at a page header.");
+      }
     } else if ((dataInput.readByte() & 0xFF) != 0) {
       throw new IllegalStateException("Unknown OGG stream version.");
     }
@@ -131,14 +136,19 @@ public class OggPacketInputStream extends InputStream {
    *         or TERMINATED.
    * @throws IOException On read error.
    */
-  private boolean loadNextNonEmptyPage() throws IOException {
+  public boolean loadNextNonEmptyPage(boolean fatal) throws IOException {
     do {
-      if (!loadNextPage()) {
+      if (!loadNextPage(fatal)) {
         return false;
       }
     } while (pageHeader.segmentCount == 0);
 
     return true;
+  }
+
+  public void skipToNextPage() throws IOException {
+    int skipCount = Arrays.stream(segmentSizes).sum();
+    skip(skipCount);
   }
 
   /**
@@ -150,7 +160,7 @@ public class OggPacketInputStream extends InputStream {
    *         or TERMINATED.
    * @throws IOException On read error.
    */
-  private boolean loadNextPage() throws IOException {
+  public boolean loadNextPage(boolean fatal) throws IOException {
     if (pageHeader != null && pageHeader.isLastPage) {
       if (packetContinues) {
         throw new IllegalStateException("Track finished in the middle of a packet.");
@@ -160,7 +170,7 @@ public class OggPacketInputStream extends InputStream {
       return false;
     }
 
-    if (!readPageHeader()) {
+    if (!readPageHeader(fatal)) {
       if (packetContinues) {
         throw new IllegalStateException("Stream ended in the middle of a packet.");
       }
@@ -269,6 +279,9 @@ public class OggPacketInputStream extends InputStream {
       return 0;
     }
 
+    System.out.println("state = " + state);
+    System.out.println("bytesLeftInPacket = " + bytesLeftInPacket);
+    System.out.println("inputStream.available() = " + inputStream.available());
     return Math.min(inputStream.available(), bytesLeftInPacket);
   }
 
@@ -380,7 +393,7 @@ public class OggPacketInputStream extends InputStream {
    *         Returns true if more bytes were fetched for this packet, state is PACKET_READ.
    * @throws IOException On read error.
    */
-  private boolean continuePacket() throws IOException {
+  public boolean continuePacket() throws IOException {
     if (!packetContinues) {
       // We have reached the end of the packet.
       state = State.PACKET_BOUNDARY;
@@ -388,7 +401,7 @@ public class OggPacketInputStream extends InputStream {
     }
 
     // Load more segments for this packet from the next page.
-    if (!loadNextNonEmptyPage()) {
+    if (!loadNextNonEmptyPage(true)) {
       throw new IllegalStateException("Track or stream end reached within an incomplete packet.");
     }
 

@@ -54,6 +54,12 @@ public class OggTrackLoader {
 
     int headerIdentifier = broker.getBuffer().getInt();
 
+    if (headerIdentifier == THEORA_VIDEO) {
+      skipVideoTrack(stream);
+    }
+
+    System.out.println("headerIdentifier = " + headerIdentifier);
+
     for (OggCodecHandler trackProvider : TRACK_PROVIDERS) {
       if (trackProvider.isMatchingIdentifier(headerIdentifier)) {
         return new CodecDetection(trackProvider, broker);
@@ -61,6 +67,32 @@ public class OggTrackLoader {
     }
 
     throw new IllegalStateException("Unsupported track in OGG stream.");
+  }
+
+  private static void skipVideoTrack(OggPacketInputStream stream) throws IOException {
+    int i = 0;
+
+    while (true) {
+      stream.loadNextNonEmptyPage(false);
+      System.out.println(i + " - stream.loadNextPage() = " + stream.loadNextPage(true));
+    }
+
+//    if (stream.startNewTrack()) {
+//      if (stream.startNewPacket()) {
+//        System.out.println("stream.isPacketComplete() = " + stream.isPacketComplete());
+//        System.out.println("stream.continuePacket() = " + stream.continuePacket());
+//        DirectBufferStreamBroker broker = new DirectBufferStreamBroker(1024);
+//        int maximumLength = MAXIMUM_FIRST_PACKET_LENGTH + 1;
+//
+//        if (!broker.consumeNext(stream, maximumLength, maximumLength)) {
+//          throw new IOException("First packet is too large for any known OGG codec.");
+//        }
+//
+//        int headerIdentifier = broker.getBuffer().getInt();
+//        System.out.println("headerIdentifier = " + headerIdentifier);
+//      }
+//    }
+//    System.out.println("stream.startNewTrack() = " + stream.startNewTrack());
   }
 
   private static class CodecDetection {
